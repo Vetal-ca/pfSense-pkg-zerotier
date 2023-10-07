@@ -46,4 +46,4 @@ do-install:
 	@${REINPLACE_CMD} -i '' -e "s|%%PKGVERSION%%|${PKGVERSION}|" \
 		${STAGEDIR}${DATADIR}/info.xml
 
-.include <bsd.port.mk>
+	.include <bsd.port.mk>
