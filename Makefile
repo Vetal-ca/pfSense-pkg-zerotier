@@ -24,26 +24,6 @@ do-extract:
 	${MKDIR} ${WRKSRC}
 
 do-install:
-	${MKDIR} ${STAGEDIR}${PREFIX}/pkg
-	${MKDIR} ${STAGEDIR}${PREFIX}/www
-	${MKDIR} ${STAGEDIR}${DATADIR}
-	${INSTALL_DATA} ${FILESDIR}${PREFIX}/pkg/zerotier.xml \
-		${STAGEDIR}${PREFIX}/pkg
-	${INSTALL_DATA} ${FILESDIR}${PREFIX}/pkg/zerotier.inc \
-		${STAGEDIR}${PREFIX}/pkg
-	${INSTALL_DATA} ${FILESDIR}${DATADIR}/info.xml \
-		${STAGEDIR}${DATADIR}
-	${INSTALL_DATA} ${FILESDIR}${PREFIX}/www/zerotier.php \
-		${STAGEDIR}${PREFIX}/www
-	${INSTALL_DATA} ${FILESDIR}${PREFIX}/www/zerotier_networks.php \
-		${STAGEDIR}${PREFIX}/www
-	${INSTALL_DATA} ${FILESDIR}${PREFIX}/www/zerotier_peers.php \
-		${STAGEDIR}${PREFIX}/www
-	${INSTALL_DATA} ${FILESDIR}${PREFIX}/www/zerotier_controller.php \
-		${STAGEDIR}${PREFIX}/www
-		${INSTALL_DATA} ${FILESDIR}${PREFIX}/www/zerotier_controller_network.php \
-		${STAGEDIR}${PREFIX}/www
-	@${REINPLACE_CMD} -i '' -e "s|%%PKGVERSION%%|${PKGVERSION}|" \
-		${STAGEDIR}${DATADIR}/info.xml
+	${SH} ${WRKDIR}/pkg-install
 
-	.include <bsd.port.mk>
+.include <bsd.port.mk>

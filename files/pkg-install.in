@@ -1,5 +1,25 @@
 #!/bin/sh
 
+#!/bin/sh
+
+# Create necessary directories
+mkdir -p ${STAGEDIR}${PREFIX}/pkg
+mkdir -p ${STAGEDIR}${PREFIX}/www
+mkdir -p ${STAGEDIR}${DATADIR}
+
+# Install files
+install -m 644 ${FILESDIR}${PREFIX}/pkg/zerotier.xml ${STAGEDIR}${PREFIX}/pkg
+install -m 644 ${FILESDIR}${PREFIX}/pkg/zerotier.inc ${STAGEDIR}${PREFIX}/pkg
+install -m 644 ${FILESDIR}${DATADIR}/info.xml ${STAGEDIR}${DATADIR}
+install -m 644 ${FILESDIR}${PREFIX}/www/zerotier.php ${STAGEDIR}${PREFIX}/www
+install -m 644 ${FILESDIR}${PREFIX}/www/zerotier_networks.php ${STAGEDIR}${PREFIX}/www
+install -m 644 ${FILESDIR}${PREFIX}/www/zerotier_peers.php ${STAGEDIR}${PREFIX}/www
+install -m 644 ${FILESDIR}${PREFIX}/www/zerotier_controller.php ${STAGEDIR}${PREFIX}/www
+install -m 644 ${FILESDIR}${PREFIX}/www/zerotier_controller_network.php ${STAGEDIR}${PREFIX}/www
+
+# Replace placeholders in info.xml
+${REINPLACE_CMD} -i '' -e "s|%%PKGVERSION%%|${PKGVERSION}|" ${STAGEDIR}${DATADIR}/info.xml
+
 if [ "${2}" != "POST-INSTALL" ]; then
 	exit 0
 fi
