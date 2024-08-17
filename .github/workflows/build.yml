@@ -1,12 +1,13 @@
 name: Build FreeBSD Package
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  push: # Any branch
+  workflow_dispatch:
+#    branches:
+#      - master
+#  pull_request:
+#    branches:
+#      - master
 
 jobs:
   build:
