@@ -1,0 +1,33 @@
+name: Build FreeBSD Package
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up FreeBSD environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+        wget https://download.freebsd.org/ftp/releases/ISO-IMAGES/13.2/FreeBSD-13.2-RELEASE-amd64-disc1.iso
+        qemu-img create -f qcow2 freebsd.img 20G
+        qemu-system-x86_64 -boot d -cdrom FreeBSD-13.2-RELEASE-amd64-disc1.iso -m 2048 -hda freebsd.img -nographic -no-reboot -net nic -net user,hostfwd=tcp::10022-:22 &
+        sleep 300
+        ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:10022"
+        sshpass -p "root" ssh -o StrictHostKeyChecking=no root@localhost -p 10022 'pkg install -y git gmake'
+
+    - name: Build package
+      run: |
+        sshpass -p "root" scp -P 10022 -r . root@localhost:/root/pfSense-pkg-zerotier
+        sshpass -p "root" ssh root@localhost -p 10022 'cd /root/pfSense-pkg-zerotier && make
