@@ -25,10 +25,33 @@ jobs:
         qemu-img create -f qcow2 freebsd.img 20G
         qemu-system-x86_64 -boot d -cdrom FreeBSD-14.0-RELEASE-amd64-disc1.iso -m 2048 -hda freebsd.img -nographic -no-reboot -net nic -net user,hostfwd=tcp::10022-:22 &
         sleep 300
+        mkdir -p "$HOME/.ssh"
         ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:10022"
         sshpass -p "root" ssh -o StrictHostKeyChecking=no root@localhost -p 10022 'pkg install -y git gmake'
 
     - name: Build package
       run: |
         sshpass -p "root" scp -P 10022 -r . root@localhost:/root/pfSense-pkg-zerotier
-        sshpass -p "root" ssh root@localhost -p 10022 'cd /root/pfSense-pkg-zerotier && make
+        sshpass -p "root" ssh root@localhost -p 10022 'cd /root/pfSense-pkg-zerotier && make clean && make package'
+        sshpass -p "root" scp -P 10022 root@localhost:/root/pfSense-pkg-zerotier/work/pkg/pfSense-pkg-zerotier-0.00.1.txz .
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v0.00.1
+        release_name: Release v0.00.1
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./pfSense-pkg-zerotier-0.00.1.txz
+        asset_name: pfSense-pkg-zerotier-0.00.1.txz
+        asset_content_type: application/octet-stream
