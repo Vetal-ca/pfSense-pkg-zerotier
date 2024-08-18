@@ -17,6 +17,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Ensure .ssh directory and config file exist
+      run: |
+        mkdir -p /home/runner/.ssh
+        touch /home/runner/.ssh/config
+
     - name: Set up FreeBSD VM
       uses: vmactions/freebsd-vm@v0.1.0
       with:
