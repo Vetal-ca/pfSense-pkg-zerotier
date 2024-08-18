@@ -26,7 +26,8 @@ jobs:
         qemu-system-x86_64 -boot d -cdrom FreeBSD-14.0-RELEASE-amd64-disc1.iso -m 2048 -hda freebsd.img -nographic -no-reboot -net nic -net user,hostfwd=tcp::10022-:22 &
         sleep 300
         mkdir -p "$HOME/.ssh"
-        ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:10022"
+        # Remove any mentioning about "localhost"
+        [ -f "$HOME/.ssh/known_hosts" ] && ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:10022"
         sshpass -p "root" ssh -o StrictHostKeyChecking=no root@localhost -p 10022 'pkg install -y git gmake'
 
     - name: Build package
