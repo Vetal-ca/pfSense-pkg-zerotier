@@ -17,25 +17,26 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up FreeBSD environment
+    - name: Set up FreeBSD VM
+      uses: vmactions/freebsd-vm@v0.1.0
+      with:
+        freebsd-version: '13.2'
+        memory: '2048'
+        disk-size: '20G'
+
+    - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y qemu qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
-        # apt install -y wget sshpass openssh-client
-        wget https://download.freebsd.org/ftp/releases/ISO-IMAGES/14.0/FreeBSD-14.0-RELEASE-amd64-disc1.iso
-        qemu-img create -f qcow2 freebsd.img 20G
-        qemu-system-x86_64 -boot d -cdrom FreeBSD-14.0-RELEASE-amd64-disc1.iso -m 2048 -hda freebsd.img -nographic -no-reboot -net nic -net user,hostfwd=tcp::10022-:22 -enable-kvm -cpu host -smp 2 -m 2048 &
-        sleep 300
-        mkdir -p "$HOME/.ssh"
-        # Remove any mentioning about "localhost"
-        [ -f "$HOME/.ssh/known_hosts" ] && ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:10022"
-        sshpass -p "root" ssh -o StrictHostKeyChecking=no root@localhost -p 10022 'pkg install -y git gmake'
+        sudo pkg install -y git gmake
 
     - name: Build package
       run: |
-        sshpass -p "root" scp -P 10022 -r . root@localhost:/root/pfSense-pkg-zerotier
-        sshpass -p "root" ssh root@localhost -p 10022 'cd /root/pfSense-pkg-zerotier && make clean && make package'
-        sshpass -p "root" scp -P 10022 root@localhost:/root/pfSense-pkg-zerotier/work/pkg/pfSense-pkg-zerotier-0.00.1.txz .
+        git clone https://github.com/pfsense/FreeBSD-ports.git
+        echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
+        cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
+        cd FreeBSD-ports/net/pfSense-pkg-zerotier
+        make clean
+        make package
+        cp work/pkg/pfSense-pkg-zerotier-0.00.1.txz .
 
     - name: Create GitHub Release
       id: create_release
