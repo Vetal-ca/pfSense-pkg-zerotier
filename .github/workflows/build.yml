@@ -20,7 +20,7 @@ jobs:
     - name: Set up FreeBSD VM
       uses: vmactions/freebsd-vm@v0.1.0
       with:
-        freebsd-version: '13.2'
+        freebsd-version: '14.0'
         memory: '2048'
         disk-size: '20G'
 
