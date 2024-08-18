@@ -21,9 +21,10 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y qemu qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+        # apt install -y wget sshpass openssh-client
         wget https://download.freebsd.org/ftp/releases/ISO-IMAGES/14.0/FreeBSD-14.0-RELEASE-amd64-disc1.iso
         qemu-img create -f qcow2 freebsd.img 20G
-        qemu-system-x86_64 -boot d -cdrom FreeBSD-14.0-RELEASE-amd64-disc1.iso -m 2048 -hda freebsd.img -nographic -no-reboot -net nic -net user,hostfwd=tcp::10022-:22 &
+        qemu-system-x86_64 -boot d -cdrom FreeBSD-14.0-RELEASE-amd64-disc1.iso -m 2048 -hda freebsd.img -nographic -no-reboot -net nic -net user,hostfwd=tcp::10022-:22 -enable-kvm -cpu host -smp 2 -m 2048 &
         sleep 300
         mkdir -p "$HOME/.ssh"
         # Remove any mentioning about "localhost"
