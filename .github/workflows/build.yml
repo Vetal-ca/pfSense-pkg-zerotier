@@ -26,16 +26,13 @@ jobs:
       run: |
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         echo >> /home/runner/.bashrc
-        echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.bashrc
+        echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.profile
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         
 
     - name: Verify Homebrew installation
       run: |
 
-        ls -la /home/linuxbrew/.linuxbrew/bin
-        echo "Trying help"
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         # brew install gcc
         brew help
         which brew
