@@ -32,18 +32,17 @@ jobs:
 
     - name: Verify Homebrew installation
       run: |
-        echo $HOME
-        cat ~/.bashrc
+
         ls -la /home/linuxbrew/.linuxbrew/bin
         echo "Trying help"
-        
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         # brew install gcc
-        brew --help
+        brew help
         which brew
-#        if ! command -v brew &> /dev/null; then
-#          echo "Homebrew could not be found"
-#          exit 1
-#        fi
+        if ! command -v brew &> /dev/null; then
+          echo "Homebrew could not be found"
+          exit 1
+        fi
 
 
     - name: Set up FreeBSD environment
