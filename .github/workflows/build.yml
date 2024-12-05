@@ -28,7 +28,9 @@ jobs:
         echo >> /home/runner/.bashrc
         echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.profile
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        
+
+    - name: Print environment variables
+      run: env
 
     - name: Verify Homebrew installation
       run: |
