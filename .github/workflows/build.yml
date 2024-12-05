@@ -32,6 +32,8 @@ jobs:
 
     - name: Verify Homebrew installation
       run: |
+        echo "Shell: -------------------"
+        echo $0
         source ~/.profile
         # brew install gcc
         if ! command -v brew &> /dev/null; then
