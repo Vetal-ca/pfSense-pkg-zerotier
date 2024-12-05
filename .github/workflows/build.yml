@@ -21,6 +21,20 @@ jobs:
       run: |
         mkdir -p /home/runner/.ssh
         touch /home/runner/.ssh/config
+        
+    - name: Install Homebrew
+      run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.profile
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+    - name: Verify Homebrew installation
+      run: |
+        if ! command -v brew &> /dev/null; then
+          echo "Homebrew could not be found"
+          exit 1
+        fi
+
 
     - name: Set up FreeBSD environment
       uses: vmactions/freebsd-vm@v0.1.6
