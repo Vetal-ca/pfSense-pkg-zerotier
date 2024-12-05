@@ -34,8 +34,6 @@ jobs:
       run: |
         source ~/.profile
         # brew install gcc
-        brew help
-        which brew
         if ! command -v brew &> /dev/null; then
           echo "Homebrew could not be found"
           exit 1
@@ -47,6 +45,7 @@ jobs:
       with:
         usesh: true
         prepare: |
+          source ~/.profile
           pkg install -y git gmake
 
     - name: Build package
