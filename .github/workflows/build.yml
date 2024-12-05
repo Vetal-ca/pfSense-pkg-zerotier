@@ -28,10 +28,12 @@ jobs:
         echo >> /home/runner/.bashrc
         echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.bashrc
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        brew install gcc
+        
 
     - name: Verify Homebrew installation
       run: |
+        # brew install gcc
+        find / -name brew
         if ! command -v brew &> /dev/null; then
           echo "Homebrew could not be found"
           exit 1
