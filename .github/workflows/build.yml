@@ -32,7 +32,7 @@ jobs:
 
     - name: Verify Homebrew installation
       run: |
-
+        source .profile
         # brew install gcc
         brew help
         which brew
