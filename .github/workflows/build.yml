@@ -32,15 +32,22 @@ jobs:
           git clone https://github.com/pfsense/FreeBSD-ports.git
           echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
           cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
-          cd FreeBSD-ports/net/pfSense-pkg-zerotier
-          echo "Vitali: before the clean"
-#          make clean
-#          echo "Vitali: before the make package"
-#          make package
-#          echo "Vitali: make package done"
-#          ls -la work/pkg/pfSense*
-#          cp work/pkg/pfSense-pkg-zerotier-0.00.1.txz .
-#          ls -la .
+          ztdir="$(pwd)/FreeBSD-ports/net/pfSense-pkg-zerotier"
+          pushd .
+          cd "${ztdir}"
+          echo "Current directory: $(pwd)"
+
+          make clean
+          make package
+          popd
+          
+          # Can be removed
+          echo "List files"
+          ls -la "${ztdir}"
+          ls -la "${ztdir}/work/pkg/"
+          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.txz" .
+          echo "Cleanup ports"
+          rm -rf FreeBSD-ports
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
