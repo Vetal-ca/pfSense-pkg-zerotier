@@ -33,9 +33,14 @@ jobs:
           echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
           cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
           cd FreeBSD-ports/net/pfSense-pkg-zerotier
+          echo "Vitali: before the clean"
           make clean
+          echo "Vitali: before the make package"
           make package
+          echo "Vitali: make package done"
+          ls -la work/pkg/pfSense*
           cp work/pkg/pfSense-pkg-zerotier-0.00.1.txz .
+          ls -la .
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
