@@ -1,7 +1,7 @@
-name: Build FreeBSD Package
+name: Test
 
 on:
-#  push: # Any branch
+  push: # Any branch
   workflow_dispatch:
 #    branches:
 #      - master
@@ -10,75 +10,39 @@ on:
 #      - master
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
+    name: Build ZeroTier package for pfSense
+#    env:
+#      MYTOKEN : ${{ secrets.MYTOKEN }}
+#      MYTOKEN2: "value2"
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Ensure .ssh directory and config file exist
-      run: |
-        mkdir -p /home/runner/.ssh
-        touch /home/runner/.ssh/config
-
-    - name: Install Homebrew
-      run: |
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        echo >> /home/runner/.bashrc
-        echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.profile
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-    - name: Print environment variables
-      run: env
-
-    - name: Verify Homebrew installation
-      run: |
-        echo "Shell: -------------------"
-        echo $0
-        source ~/.profile
-        # brew install gcc
-        if ! command -v brew &> /dev/null; then
-          echo "Homebrew could not be found"
-          exit 1
-        fi
-
-
-    - name: Set up FreeBSD environment
-      uses: vmactions/freebsd-vm@v0.1.6
+    - uses: actions/checkout@v4
+    - name: Do the build
+      id: create_release
+      uses: vmactions/freebsd-vm@v1
       with:
+#        envs: 'MYTOKEN MYTOKEN2'
         usesh: true
         prepare: |
           source ~/.profile
           pkg install -y git gmake
 
-    - name: Build package
-      run: |
-        git clone https://github.com/pfsense/FreeBSD-ports.git
-        echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
-        cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
-        cd FreeBSD-ports/net/pfSense-pkg-zerotier
-        make clean
-        make package
-        cp work/pkg/pfSense-pkg-zerotier-0.00.1.txz .
-
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v0.00.1
-        release_name: Release v0.00.1
-        draft: false
-        prerelease: false
+        run: |
+          git clone https://github.com/pfsense/FreeBSD-ports.git
+          echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
+          cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
+          cd FreeBSD-ports/net/pfSense-pkg-zerotier
+          make clean
+          make package
+          cp work/pkg/pfSense-pkg-zerotier-0.00.1.txz .
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+#        upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./pfSense-pkg-zerotier-0.00.1.txz
         asset_name: pfSense-pkg-zerotier-0.00.1.txz
         asset_content_type: application/octet-stream
