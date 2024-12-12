@@ -1,7 +1,7 @@
 name: Build FreeBSD Package
 
 on:
-  push: # Any branch
+#  push: # Any branch
   workflow_dispatch:
 #    branches:
 #      - master

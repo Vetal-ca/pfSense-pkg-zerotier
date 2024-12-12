@@ -18,15 +18,14 @@ jobs:
 #        envs: 'MYTOKEN MYTOKEN2'
         usesh: true
         prepare: |
-          pkg install -y curl
+          source ~/.profile
+          pkg install -y git gmake
 
         run: |
-          pwd
-          ls -lah
-          whoami
-          env
-          freebsd-version
-          sysctl hw.model
-          sysctl hw.ncpu
-          sysctl hw.physmem
-          sysctl hw.usermem
+          git clone https://github.com/pfsense/FreeBSD-ports.git
+          echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
+          cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
+          cd FreeBSD-ports/net/pfSense-pkg-zerotier
+          make clean
+          make package
+          cp work/pkg/pfSense-pkg-zerotier-0.00.1.txz .
