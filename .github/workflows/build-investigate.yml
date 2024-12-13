@@ -35,3 +35,6 @@ jobs:
           echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
           # Avoid copy of FreeBSD-ports into itself
           rsync -av --exclude='FreeBSD-ports' . FreeBSD-ports/net/pfSense-pkg-zerotier
+          cd FreeBSD-ports/net/pfSense-pkg-zerotier
+          make clean
+          make package
