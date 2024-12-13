@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push: # Any branch
+  workflow_dispatch:
+#    branches:
+#      - master
+#  pull_request:
+#    branches:
+#      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Build ZeroTier package for pfSense
+#    env:
+#      MYTOKEN : ${{ secrets.MYTOKEN }}
+#      MYTOKEN2: "value2"
+    steps:
+    - uses: actions/checkout@v4
+    - name: Do the build
+      id: create_release
+      uses: vmactions/freebsd-vm@v1
+      with:
+        usesh: true
+        prepare: |
+          source ~/.profile
+          pkg install -y git gmake
+
+        run: |
+          pwd
+          ls -la
