@@ -1,4 +1,4 @@
-name: Build
+name: Build investigate
 
 on:
   push: # Any branch
