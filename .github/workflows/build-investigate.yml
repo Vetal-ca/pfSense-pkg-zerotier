@@ -33,5 +33,5 @@ jobs:
           #  /home/runner/work/pfSense-pkg-zerotier/pfSense-pkg-zerotier
           git clone https://github.com/pfsense/FreeBSD-ports.git
           echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
-          cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
-          ls -la
+          # Avoid copy of FreeBSD-ports into itself
+          rsync -av --exclude='FreeBSD-ports' . FreeBSD-ports/net/pfSense-pkg-zerotier
