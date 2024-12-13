@@ -36,5 +36,11 @@ jobs:
           # Avoid copy of FreeBSD-ports into itself
           rsync -av --exclude='FreeBSD-ports' . FreeBSD-ports/net/pfSense-pkg-zerotier
           cd FreeBSD-ports/net/pfSense-pkg-zerotier
+          echo "make clean"
+          find . -name info.xml
           make clean
+          echo "make package"
+          find . -name info.xml
           make package
+          echo "Done"
+          find . -name info.xml
