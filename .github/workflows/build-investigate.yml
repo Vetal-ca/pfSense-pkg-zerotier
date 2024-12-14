@@ -36,14 +36,26 @@ jobs:
           # Avoid copy of FreeBSD-ports into itself
           rsync -av --exclude='FreeBSD-ports' . FreeBSD-ports/net/pfSense-pkg-zerotier
           cd FreeBSD-ports/net/pfSense-pkg-zerotier
-          echo "VitaliL make clean"
+          echo "Vitali: make clean"
           find . -name info.xml
-          make clean
+          make clean > make_clean.log 2>&1
           echo "Vitali: make package"
           find . -name info.xml
-          make package
+          make package > make_package.log 2>&1
           echo "Vitali: Done"
           find . -name info.xml
           ls -la
           echo "Vitali: tree"
           tree .
+
+    - name: Upload make clean log
+      uses: actions/upload-artifact@v3
+      with:
+        name: make-clean-log
+        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_clean.log
+
+    - name: Upload make package log
+      uses: actions/upload-artifact@v3
+      with:
+        name: make-package-log
+        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_package.log
