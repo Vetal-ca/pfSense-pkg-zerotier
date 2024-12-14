@@ -25,7 +25,7 @@ jobs:
         usesh: true
         prepare: |
           source ~/.profile
-          pkg install -y git gmake
+          pkg install -y git gmake tree
 
         run: |
           
@@ -45,3 +45,5 @@ jobs:
           echo "Vitali: Done"
           find . -name info.xml
           ls -la
+          echo "Vitali: tree"
+          tree .
