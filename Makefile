@@ -26,4 +26,7 @@ do-extract:
 do-install:
 	${SH} ${WRKDIR}/pkg-install
 
+do-deinstall:
+	${SH} ${WRKDIR}/pkg-deinstall
+
 .include <bsd.port.mk>
