@@ -21,5 +21,5 @@ pfSense package to support zerotier.
 
 
 ```shell
-cp -R pfSense-pkg-zerotier FreeBSD-ports/net/
+cp -r pfSense-pkg-zerotier FreeBSD-ports/net/
 ```
