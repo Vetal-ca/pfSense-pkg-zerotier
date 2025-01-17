@@ -1,5 +1,8 @@
 # $FreeBSD$
 
+# Define zerotier package version
+ZEROTIER_VERSION?=	1.14.2
+
 PORTNAME=	pfSense-pkg-zerotier
 PORTVERSION=	0.00.1
 CATEGORIES=	net
@@ -19,7 +22,7 @@ NO_MTREE=	yes
 
 FILESDIR=	${.CURDIR}/files
 SUB_FILES=	pkg-install pkg-deinstall
-SUB_LIST=	PREFIX=${PREFIX} STAGEDIR=${STAGEDIR} DATADIR=${DATADIR} PKGVERSION=${PORTVERSION}
+SUB_LIST=	PREFIX=${PREFIX} STAGEDIR=${STAGEDIR} DATADIR=${DATADIR} PKGVERSION=${PORTVERSION} ZEROTIER_VERSION=${ZEROTIER_VERSION}
 
 # Set DATADIR explicitly
 DATADIR=	${PREFIX}/share/${PORTNAME}
@@ -32,6 +35,20 @@ do-extract:
 
 do-install:
 	env STAGEDIR=${STAGEDIR} PREFIX=${PREFIX} FILESDIR=${FILESDIR} DATADIR=${DATADIR} REINPLACE_CMD="${REINPLACE_CMD}" PKGVERSION=${PORTVERSION} ${SH} ${WRKDIR}/pkg-install
+# Install post-install script
+	${INSTALL_SCRIPT} ${WRKDIR}/post-install.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-install
+	# Install post-deinstall script
+	${INSTALL_SCRIPT} ${WRKDIR}/post-deinstall.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-deinstall
+
+	# Create +POST_INSTALL file
+	echo "#!/bin/sh" > ${STAGEDIR}/+POST_INSTALL
+	echo "${PREFIX}/sbin/${PORTNAME}-post-install" >> ${STAGEDIR}/+POST_INSTALL
+	chmod +x ${STAGEDIR}/+POST_INSTALL
+
+	# Create +POST_DEINSTALL file
+	echo "#!/bin/sh" > ${STAGEDIR}/+POST_DEINSTALL
+	echo "${PREFIX}/sbin/${PORTNAME}-post-deinstall" >> ${STAGEDIR}/+POST_DEINSTALL
+	chmod +x ${STAGEDIR}/+POST_DEINSTALL
 
 do-deinstall:
 	${SH} ${WRKDIR}/pkg-deinstall
