@@ -36,24 +36,25 @@ jobs:
           ztdir="${cur_dir}/FreeBSD-ports/net/pfSense-pkg-zerotier"
           cd "${ztdir}"
 
-          make clean > make_clean.log 2>&1
-          make package > make_package.log 2>&1
-          cd "${cur_dir}"
-          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.txz" .
-          echo "Cleanup ports"
-          rm -rf FreeBSD-ports
+          make clean && make package
+#          make clean > make_clean.log 2>&1
+#          make package > make_package.log 2>&1
+          cd -
+#          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.txz" .
+#          echo "Cleanup ports"
+#          rm -rf FreeBSD-ports
 
-    - name: Upload make clean log
-      uses: actions/upload-artifact@v3
-      with:
-        name: make-clean-log
-        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_clean.log
-
-    - name: Upload make package log
-      uses: actions/upload-artifact@v3
-      with:
-        name: make-package-log
-        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_package.log
+#    - name: Upload make clean log
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: make-clean-log
+#        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_clean.log
+#
+#    - name: Upload make package log
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: make-package-log
+#        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_package.log
 
     - name: Create Release
       id: create_release
@@ -72,6 +73,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./pfSense-pkg-zerotier-0.00.1.txz
+        asset_path: ./FreeBSD-ports/net/pfSense-pkg-zerotier/work/pkg/pfSense-pkg-zerotier-0.00.1.txz
         asset_name: pfSense-pkg-zerotier-0.00.1.txz
         asset_content_type: application/octet-stream
