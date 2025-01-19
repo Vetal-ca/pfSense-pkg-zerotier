@@ -1,7 +1,7 @@
 name: Build investigate
 
 on:
-  push: # Any branch
+#  push: # Any branch
   workflow_dispatch:
 #    branches:
 #      - master

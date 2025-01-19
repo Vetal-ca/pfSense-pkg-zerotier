@@ -1,7 +1,7 @@
 name: Build
 
 on:
- # push: # Any branch
+  push: # Any branch
   workflow_dispatch:
 #    branches:
 #      - master
@@ -32,19 +32,13 @@ jobs:
           git clone https://github.com/pfsense/FreeBSD-ports.git
           echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
           cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
-          ztdir="$(pwd)/FreeBSD-ports/net/pfSense-pkg-zerotier"
-          pushd .
+          cur_dir="$(pwd)"
+          ztdir="${cur_dir}/FreeBSD-ports/net/pfSense-pkg-zerotier"
           cd "${ztdir}"
-          echo "Current directory: $(pwd)"
 
-          make clean
-          make package
-          popd
-          
-          # Can be removed
-          echo "List files"
-          ls -la "${ztdir}"
-          ls -la "${ztdir}/work/pkg/"
+          make clean > make_clean.log 2>&1
+          make package > make_package.log 2>&1
+          cd "${cur_dir}"
           cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.txz" .
           echo "Cleanup ports"
           rm -rf FreeBSD-ports
