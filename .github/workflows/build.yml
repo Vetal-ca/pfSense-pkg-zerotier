@@ -43,12 +43,35 @@ jobs:
           echo "Cleanup ports"
           rm -rf FreeBSD-ports
 
+    - name: Upload make clean log
+      uses: actions/upload-artifact@v3
+      with:
+        name: make-clean-log
+        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_clean.log
+
+    - name: Upload make package log
+      uses: actions/upload-artifact@v3
+      with:
+        name: make-package-log
+        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_package.log
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-#        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./pfSense-pkg-zerotier-0.00.1.txz
         asset_name: pfSense-pkg-zerotier-0.00.1.txz
         asset_content_type: application/octet-stream
