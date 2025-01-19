@@ -37,10 +37,16 @@ jobs:
 
           make clean # > make_clean.log 2>&1
           make package # > make_package.log 2>&1
-#          cd "${cur_dir}"
-#          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.txz" .
-#          echo "Cleanup ports"
-#          rm -rf FreeBSD-ports
+          echo "Diagnostics!"
+          pwd
+          ls -la "${ztdir}/work"
+          cd "${cur_dir}"
+          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.txz" .
+          pwd
+          ls -la
+          echo "Cleanup ports"
+          rm -rf FreeBSD-ports
+          pwd -la
 
     - name: Upload make clean log
       uses: actions/upload-artifact@v3
