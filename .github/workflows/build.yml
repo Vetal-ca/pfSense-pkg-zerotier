@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Do the build
-      id: create_release
+      id: build_package
       uses: vmactions/freebsd-vm@v1
       with:
 #        envs: 'MYTOKEN MYTOKEN2'
