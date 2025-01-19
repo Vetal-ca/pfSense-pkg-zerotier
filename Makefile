@@ -34,11 +34,14 @@ do-extract:
 	${MKDIR} ${WRKSRC}
 
 do-install:
+# Create necessary directories
+	${MKDIR} ${STAGEDIR}${PREFIX}/sbin
+
 	env STAGEDIR=${STAGEDIR} PREFIX=${PREFIX} FILESDIR=${FILESDIR} DATADIR=${DATADIR} REINPLACE_CMD="${REINPLACE_CMD}" PKGVERSION=${PORTVERSION} ${SH} ${WRKDIR}/pkg-install
 # Install post-install script
-	${INSTALL_SCRIPT} ${WRKDIR}/post-install.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-install
-	# Install post-deinstall script
-	${INSTALL_SCRIPT} ${WRKDIR}/post-deinstall.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-deinstall
+	# Install post-install and post-deinstall scripts directly into STAGEDIR
+	${INSTALL_SCRIPT} ${FILESDIR}/post-install.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-install
+	${INSTALL_SCRIPT} ${FILESDIR}/post-deinstall.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-deinstall
 
 	# Create +POST_INSTALL file
 	echo "#!/bin/sh" > ${STAGEDIR}/+POST_INSTALL

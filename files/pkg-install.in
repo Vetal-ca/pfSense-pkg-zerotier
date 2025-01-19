@@ -27,8 +27,8 @@ install -m 644 ${FILESDIR}/usr/local/www/zerotier_networks.php ${STAGEDIR}${PREF
 install -m 644 ${FILESDIR}/usr/local/www/zerotier_peers.php ${STAGEDIR}${PREFIX}/www
 install -m 644 ${FILESDIR}/usr/local/www/zerotier_controller.php ${STAGEDIR}${PREFIX}/www
 install -m 644 ${FILESDIR}/usr/local/www/zerotier_controller_network.php ${STAGEDIR}${PREFIX}/www
-install -m 755 ${FILESDIR}/post-install.sh ${STAGEDIR}${PREFIX}
-install -m 755 ${FILESDIR}/post-deinstall.sh ${STAGEDIR}${PREFIX}
+#install -m 755 ${FILESDIR}/post-install.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-install
+#install -m 755 ${FILESDIR}/post-deinstall.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-deinstall
 
 # Replace placeholders in info.xml
 ${REINPLACE_CMD} -e "s|%%PKGVERSION%%|${PKGVERSION}|g" ${STAGEDIR}${DATADIR}/info.xml
