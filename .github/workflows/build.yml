@@ -38,9 +38,9 @@ jobs:
           make clean # > make_clean.log 2>&1
           make package # > make_package.log 2>&1
           cd "${cur_dir}"
-          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.pkg" . -v
-          cp "${ztdir}/make_clean.log . -v
-          cp "${ztdir}/make_package.log . -v
+          cp -v "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.pkg" .
+          cp -v "${ztdir}/make_clean.log .
+          cp - "${ztdir}/make_package.log .
           
           echo "Copied files: "
           pwd
