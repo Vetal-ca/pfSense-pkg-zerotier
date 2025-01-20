@@ -41,7 +41,7 @@ jobs:
           pwd
           ls -la "${ztdir}/work"
           cd "${cur_dir}"
-          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.txz" .
+          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.pkg" .
           pwd
           ls -la
           echo "Cleanup ports"
@@ -77,6 +77,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./FreeBSD-ports/net/pfSense-pkg-zerotier/work/pkg/pfSense-pkg-zerotier-0.00.1.txz
-        asset_name: pfSense-pkg-zerotier-0.00.1.txz
+        asset_path: ./pfSense-pkg-zerotier-0.00.1.pkg
+        asset_name: pfSense-pkg-zerotier-0.00.1.pkg
         asset_content_type: application/octet-stream

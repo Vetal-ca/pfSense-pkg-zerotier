@@ -7,12 +7,12 @@ if ! command -v pkg >/dev/null 2>&1; then
 fi
 
 # Install zerotier package
-echo "Installing zerotier-${ZEROTIER_VERSION}.txz..."
-pkg add http://pkg.freebsd.org/freebsd:12:x86:64/latest/All/zerotier-${ZEROTIER_VERSION}.txz
+echo "Installing zerotier-${ZEROTIER_VERSION}.pkg..."
+pkg add https://pkg.freebsd.org/FreeBSD:14:amd64/latest/All/zerotier-${ZEROTIER_VERSION}.pkg
 if [ $? -ne 0 ]; then
-    echo "Failed to install zerotier-${ZEROTIER_VERSION}.txz"
+    echo "Failed to install zerotier-${ZEROTIER_VERSION}.pkg"
     exit 1
 fi
 
-echo "zerotier-${ZEROTIER_VERSION}.txz installed successfully."
+echo "zerotier-${ZEROTIER_VERSION}.pkg installed successfully."
 exit 0
