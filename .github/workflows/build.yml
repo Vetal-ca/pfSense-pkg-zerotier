@@ -50,31 +50,18 @@ jobs:
             ztdir="${cur_dir}/FreeBSD-ports/net/pfSense-pkg-zerotier"
             cd "${ztdir}"
             
-            make clean > make_clean.log 2>&1
-            make package > make_package.log 2>&1
+            make clean
+            make package
             cd "${cur_dir}"
             cp -v "${ztdir}/work/pkg/pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg" .
-            cp -v "${ztdir}/make_clean.log .
-            cp - "${ztdir}/make_package.log .
-            
-            echo "Copied files: "
-            pwd
-            ls -la
             
             echo "Cleanup ports"
             rm -rf FreeBSD-ports
 
-      - name: Upload make clean log
-        uses: actions/upload-artifact@v3
-        with:
-          name: make-clean-log
-          path: ./make_clean.log
-
-      - name: Upload make package log
-        uses: actions/upload-artifact@v3
-        with:
-          name: make-package-log
-          path: ./make_package.log
+      - name: Generate SHA256 checksum
+        run: |
+          sha256sum pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg > pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg.sha256
+          cat pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg.sha256
 
       - name: Create Release
         id: create_release
@@ -86,9 +73,8 @@ jobs:
           release_name: Release v${{ env.PORTVERSION }}
           draft: false
           prerelease: ${{ github.ref != 'refs/heads/master' }} # Mark as prerelease if not on master
-        #if: ${{ github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch' }}
 
-      - name: Upload Release Asset
+      - name: Upload Release Asset (Package)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -97,4 +83,13 @@ jobs:
           asset_path: ./pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg
           asset_name: pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg
           asset_content_type: application/octet-stream
-#        #if: ${{ github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch' }}
+
+      - name: Upload Release Asset (Checksum)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg.sha256
+          asset_name: pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg.sha256
+          asset_content_type: text/plain
