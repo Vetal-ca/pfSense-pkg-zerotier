@@ -1,16 +1,14 @@
-# $FreeBSD$
-
-# Define zerotier package version
-ZEROTIER_VERSION?=	1.14.2
+# Read versions from VERSION file
+include VERSION
 
 PORTNAME=	pfSense-pkg-zerotier
-PORTVERSION=	0.00.1
+PORTVERSION=	${ZEROTIER_VERSION}-${PKG_VERSION}
 CATEGORIES=	net
 MASTER_SITES=	# empty
 DISTFILES=	# empty
 EXTRACT_ONLY=	# empty
 
-MAINTAINER=	grmoore18@gmail.com
+MAINTAINER=	vitali.khlebko@vetal.ca
 COMMENT=	pfSense package zerotier
 
 LICENSE=	APACHE20

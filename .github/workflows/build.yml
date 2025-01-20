@@ -3,82 +3,98 @@ name: Build
 on:
   push: # Any branch
   workflow_dispatch:
-#    branches:
-#      - master
-#  pull_request:
-#    branches:
-#      - master
 
 jobs:
   test:
     runs-on: ubuntu-latest
     name: Build ZeroTier package for pfSense
-#    env:
-#      MYTOKEN : ${{ secrets.MYTOKEN }}
-#      MYTOKEN2: "value2"
     steps:
-    - uses: actions/checkout@v4
-    - name: Do the build
-      id: build_package
-      uses: vmactions/freebsd-vm@v1
-      with:
-        usesh: true
-        prepare: |
-          source ~/.profile
-          pkg install -y git gmake
+      - uses: actions/checkout@v4
 
+      - name: Read versions from VERSION file
+        id: versions
         run: |
-          git clone https://github.com/pfsense/FreeBSD-ports.git
-          echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
-          cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
-          cur_dir="$(pwd)"
-          ztdir="${cur_dir}/FreeBSD-ports/net/pfSense-pkg-zerotier"
-          cd "${ztdir}"
-
-          make clean # > make_clean.log 2>&1
-          make package # > make_package.log 2>&1
-          cd "${cur_dir}"
-          cp -v "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.pkg" .
-          cp -v "${ztdir}/make_clean.log .
-          cp - "${ztdir}/make_package.log .
+          source VERSION
+          echo "ZEROTIER_VERSION=${ZEROTIER_VERSION}" >> $GITHUB_ENV
+          echo "PKG_VERSION=${PKG_VERSION}" >> $GITHUB_ENV
           
-          echo "Copied files: "
-          pwd
-          ls -la
+          # If this is not the master branch, append a timestamp to the version
+          if [ "${{ github.ref }}" != "refs/heads/master" ]; then
+            TIMESTAMP=$(date +%Y%m%d%H%M%S)
+            echo "PKG_VERSION=${PKG_VERSION}-${TIMESTAMP}" >> $GITHUB_ENV
+          fi
+          
+          echo "PORTVERSION=${ZEROTIER_VERSION}-${PKG_VERSION}" >> $GITHUB_ENV
 
-          echo "Cleanup ports"
-          rm -rf FreeBSD-ports
+      - name: Create or update tag
+        run: |
+          TAG_NAME="v${{ env.PORTVERSION }}"
+          git tag -d $TAG_NAME || true
+          git tag $TAG_NAME
+          git push origin --tags --force
 
+      - name: Do the build
+        id: build_package
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            source ~/.profile
+            pkg install -y git gmake
 
-    - name: Upload make clean log
-      uses: actions/upload-artifact@v3
-      with:
-        name: make-clean-log
-        path: ./make_clean.log
+          run: |
+            git clone https://github.com/pfsense/FreeBSD-ports.git
+            echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | sudo tee -a /etc/make.conf
+            cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
+            cur_dir="$(pwd)"
+            ztdir="${cur_dir}/FreeBSD-ports/net/pfSense-pkg-zerotier"
+            cd "${ztdir}"
+            
+            make clean > make_clean.log 2>&1
+            make package > make_package.log 2>&1
+            cd "${cur_dir}"
+            cp -v "${ztdir}/work/pkg/pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg" .
+            cp -v "${ztdir}/make_clean.log .
+            cp - "${ztdir}/make_package.log .
+            
+            echo "Copied files: "
+            pwd
+            ls -la
+            
+            echo "Cleanup ports"
+            rm -rf FreeBSD-ports
 
-    - name: Upload make package log
-      uses: actions/upload-artifact@v3
-      with:
-        name: make-package-log
-        path: ./make_package.log
+      - name: Upload make clean log
+        uses: actions/upload-artifact@v3
+        with:
+          name: make-clean-log
+          path: ./make_clean.log
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
-        draft: false
-        prerelease: false
+      - name: Upload make package log
+        uses: actions/upload-artifact@v3
+        with:
+          name: make-package-log
+          path: ./make_package.log
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./pfSense-pkg-zerotier-0.00.1.pkg
-        asset_name: pfSense-pkg-zerotier-0.00.1.pkg
-        asset_content_type: application/octet-stream
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.PORTVERSION }}
+          release_name: Release v${{ env.PORTVERSION }}
+          draft: false
+          prerelease: ${{ github.ref != 'refs/heads/master' }} # Mark as prerelease if not on master
+        #if: ${{ github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch' }}
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg
+          asset_name: pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg
+          asset_content_type: application/octet-stream
+        #if: ${{ github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch' }}
