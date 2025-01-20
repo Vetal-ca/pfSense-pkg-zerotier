@@ -37,28 +37,30 @@ jobs:
 
           make clean # > make_clean.log 2>&1
           make package # > make_package.log 2>&1
-          echo "Diagnostics!"
-          pwd
-          ls -la "${ztdir}/work"
           cd "${cur_dir}"
-          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.pkg" .
+          cp "${ztdir}/work/pkg/pfSense-pkg-zerotier-0.00.1.pkg" . -v
+          cp "${ztdir}/make_clean.log . -v
+          cp "${ztdir}/make_package.log . -v
+          
+          echo "Copied files: "
           pwd
           ls -la
+
           echo "Cleanup ports"
           rm -rf FreeBSD-ports
-          pwd -la
+
 
     - name: Upload make clean log
       uses: actions/upload-artifact@v3
       with:
         name: make-clean-log
-        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_clean.log
+        path: ./make_clean.log
 
     - name: Upload make package log
       uses: actions/upload-artifact@v3
       with:
         name: make-package-log
-        path: FreeBSD-ports/net/pfSense-pkg-zerotier/make_package.log
+        path: ./make_package.log
 
     - name: Create Release
       id: create_release
