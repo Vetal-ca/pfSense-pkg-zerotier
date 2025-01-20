@@ -21,8 +21,8 @@ jobs:
           # If this is not the master branch, append a timestamp to the version
           if [ "${{ github.ref }}" != "refs/heads/master" ]; then
             echo "Not a feature branch: "${{ github.ref }}"
-            TIMESTAMP=$(date +%Y%m%d%H%M%S)
-            echo "PKG_VERSION=${PKG_VERSION}.${TIMESTAMP}" >> $GITHUB_ENV
+            timestamp=$(date +%Y%m%d%H%M%S)
+            echo "PKG_VERSION=${PKG_VERSION}.${timestamp}" >> $GITHUB_ENV
           else
             echo "Feature branch: "${{ github.ref }}"
           fi
