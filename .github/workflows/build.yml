@@ -21,10 +21,10 @@ jobs:
           # If this is not the master branch, append a timestamp to the version
           if [ "${{ github.ref }}" != "refs/heads/master" ]; then
             TIMESTAMP=$(date +%Y%m%d%H%M%S)
-            echo "PKG_VERSION=${PKG_VERSION}-${TIMESTAMP}" >> $GITHUB_ENV
+            echo "PKG_VERSION=${PKG_VERSION}.${TIMESTAMP}" >> $GITHUB_ENV
           fi
           
-          echo "PORTVERSION=${ZEROTIER_VERSION}-${PKG_VERSION}" >> $GITHUB_ENV
+          echo "PORTVERSION=${ZEROTIER_VERSION}.${PKG_VERSION}" >> $GITHUB_ENV
 
       - name: Create or update tag
         run: |
@@ -97,4 +97,4 @@ jobs:
           asset_path: ./pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg
           asset_name: pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg
           asset_content_type: application/octet-stream
-        #if: ${{ github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch' }}
+#        #if: ${{ github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch' }}
