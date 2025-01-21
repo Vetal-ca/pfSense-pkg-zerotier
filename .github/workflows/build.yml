@@ -20,9 +20,10 @@ jobs:
           
           # If this is not the master branch, append a timestamp to the version
           if [ "${{ github.ref }}" != "refs/heads/master" ]; then
-            timestamp=$(date +%Y%m%d%H%M%S)
-            echo "PKG_VERSION=${PKG_VERSION}.${timestamp}" >> $GITHUB_ENV
-            echo "PKG_VERSION in the cindition: ${PKG_VERSION}"
+            NEW_PKG_VERSION="${PKG_VERSION}.${timestamp}"
+            echo "PKG_VERSION=${NEW_PKG_VERSION}" >> $GITHUB_ENV
+            PKG_VERSION="${NEW_PKG_VERSION}"  # Update PKG_VERSION in the current shell
+            echo "PKG_VERSION in the condition: ${PKG_VERSION}"
           fi
           
           echo "PORTVERSION=${ZEROTIER_VERSION}.${PKG_VERSION}" >> $GITHUB_ENV
