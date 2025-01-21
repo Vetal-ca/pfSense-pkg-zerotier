@@ -28,6 +28,8 @@ jobs:
             timestamp=$(date +%Y%m%d%H%M%S)
             tag_name="${tag_name}.${timestamp}"
           fi
+          
+          echo "TAG_NAME=${tag_name}" >> $GITHUB_ENV
 
           git tag -d "${tag_name}" || true
           git tag "${tag_name}"
@@ -69,8 +71,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.PORTVERSION }}
-          release_name: Release v${{ env.PORTVERSION }}
+          tag_name: v${{ env.TAG_NAME }}
+          release_name: Release v${{ env.TAG_NAME }}
           draft: false
           prerelease: ${{ github.ref != 'refs/heads/master' }} # Mark as prerelease if not on master
 
