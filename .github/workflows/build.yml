@@ -19,6 +19,10 @@ jobs:
           echo "ZEROTIER_VERSION=${ZEROTIER_VERSION}" >> $GITHUB_ENV
           echo "PKG_VERSION=${PKG_VERSION}" >> $GITHUB_ENV
           echo "PORTVERSION=${ZEROTIER_VERSION}.${PKG_VERSION}" >> $GITHUB_ENV
+          
+          echo "ZeroTier version: ${ZEROTIER_VERSION}"
+          echo "Package version: ${PKG_VERSION}"
+          echo "Port version: ${PORTVERSION}"
 
       - name: Create or update tag
         run: |
@@ -55,6 +59,9 @@ jobs:
 
             make clean
             make package
+            
+            echo "List package files"
+            ls -la work/pkg
             cd "${cur_dir}"
             cp -v "${ztdir}/work/pkg/pfSense-pkg-zerotier-${{ env.PORTVERSION }}.pkg" .
 
