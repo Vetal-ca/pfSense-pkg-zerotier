@@ -1,10 +1,15 @@
-.if !defined(ZEROTIER_VERSION)
-.error ZEROTIER_VERSION is not set
-.endif
+PKG_VERSION ?=
+ZEROTIER_VERSION ?=
 
-.if !defined(PKG_VERSION)
-.error PKG_VERSION is not set
-.endif
+all:
+	@echo "Using environment variables: ${PKG_VERSION}, ${ZEROTIER_VERSION}"
+	@:$(call check_defined, PKG_VERSION)
+	@:$(call check_defined, ZEROTIER_VERSION)
+
+# Function to check if environment variables are set
+check_defined = \
+    $(if $(value $1),, \
+      $(error Undefined environment variable $1))
 
 PORTNAME=	pfSense-pkg-zerotier
 PORTVERSION=	${ZEROTIER_VERSION}.${PKG_VERSION}
