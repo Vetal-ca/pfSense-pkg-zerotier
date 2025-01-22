@@ -11,17 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Read versions from VERSION file
+      - name: Read versions from version.json file
         id: versions
         run: |
-          source VERSION
+          ZEROTIER_VERSION=$(jq -r '.zerotier' version.json)
+          PKG_VERSION=$(jq -r '.pkg_version' version.json)
           echo "ZEROTIER_VERSION=${ZEROTIER_VERSION}" >> $GITHUB_ENV
           echo "PKG_VERSION=${PKG_VERSION}" >> $GITHUB_ENV
           echo "PORTVERSION=${ZEROTIER_VERSION}.${PKG_VERSION}" >> $GITHUB_ENV
 
       - name: Create or update tag
         run: |
-          tag_name="v${{ env.PORTVERSION }}"
+          tag_name="${{ env.PORTVERSION }}"
           
           # If this is not the master branch, append a timestamp to the version
           if [ "${{ github.ref }}" != "refs/heads/master" ]; then
