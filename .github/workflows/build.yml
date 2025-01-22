@@ -45,6 +45,7 @@ jobs:
         id: build_package
         uses: vmactions/freebsd-vm@v1
         with:
+          envs: 'PKG_VERSION, ZEROTIER_VERSION'
           usesh: true
           prepare: |
             source ~/.profile
