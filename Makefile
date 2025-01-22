@@ -1,6 +1,12 @@
-# Read versions from VERSION file using jq
-ZEROTIER_VERSION != jq -r '.zerotier_version' version.json
-PKG_VERSION != jq -r '.pkg_version' version.json
+# Check if ZEROTIER_VERSION is set
+ifndef ZEROTIER_VERSION
+$(error ZEROTIER_VERSION is not set)
+endif
+
+# Check if PKG_VERSION is set
+ifndef PKG_VERSION
+$(error PKG_VERSION is not set)
+endif
 
 PORTNAME=	pfSense-pkg-zerotier
 PORTVERSION=	${ZEROTIER_VERSION}.${PKG_VERSION}
