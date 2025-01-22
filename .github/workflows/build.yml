@@ -16,7 +16,7 @@ jobs:
         run: |
           ZEROTIER_VERSION=$(jq -r '.zerotier_version' version.json)
           PKG_VERSION=$(jq -r '.pkg_version' version.json)
-          "PORTVERSION="${ZEROTIER_VERSION}.${PKG_VERSION}"
+          PORTVERSION="${ZEROTIER_VERSION}.${PKG_VERSION}"
           echo "ZEROTIER_VERSION=${ZEROTIER_VERSION}" >> $GITHUB_ENV
           echo "PKG_VERSION=${PKG_VERSION}" >> $GITHUB_ENV
           echo "PORTVERSION=${PORTVERSION}" >> $GITHUB_ENV
