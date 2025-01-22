@@ -1,6 +1,6 @@
 # Read versions from VERSION file using jq
-ZEROTIER_VERSION := $(shell jq -r '.zerotier_version' version.json)
-PKG_VERSION := $(shell jq -r '.pkg_version' version.json)
+ZEROTIER_VERSION != jq -r '.zerotier_version' version.json
+PKG_VERSION != jq -r '.pkg_version' version.json
 
 PORTNAME=	pfSense-pkg-zerotier
 PORTVERSION=	${ZEROTIER_VERSION}.${PKG_VERSION}
