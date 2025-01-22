@@ -14,7 +14,7 @@ jobs:
       - name: Read versions from version.json file
         id: versions
         run: |
-          ZEROTIER_VERSION=$(jq -r '.zerotier' version.json)
+          ZEROTIER_VERSION=$(jq -r '.zerotier_version' version.json)
           PKG_VERSION=$(jq -r '.pkg_version' version.json)
           echo "ZEROTIER_VERSION=${ZEROTIER_VERSION}" >> $GITHUB_ENV
           echo "PKG_VERSION=${PKG_VERSION}" >> $GITHUB_ENV
