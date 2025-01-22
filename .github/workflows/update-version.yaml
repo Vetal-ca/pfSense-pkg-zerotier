@@ -35,8 +35,6 @@ jobs:
       - name: Increment PKG_VERSION
         if: steps.check-version.outputs.modified == 'false'
         run: |
-          # Install jq for JSON parsing
-          sudo apt-get install -y jq
           # Make it two steps to avoid in-flight overwrite
           updated_version=$(jq '.pkg_version |= (split(".") | (.[-1] |= (tonumber + 1 | tostring)) | join("."))' version.json)
           echo "${updated_version}" > version.json
