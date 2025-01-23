@@ -9,6 +9,8 @@ ZEROTIER_VERSION ?=
 .error ZEROTIER_VERSION is not set
 .endif
 
+ZEROTIER_PKG_URL=	https://pkg.freebsd.org/FreeBSD:14:amd64/latest/All/zerotier-${ZEROTIER_VERSION}.pkg
+
 PORTNAME=	pfSense-pkg-zerotier
 PORTVERSION=	${ZEROTIER_VERSION}.${PKG_VERSION}
 CATEGORIES=	net
@@ -47,11 +49,14 @@ do-install:
 	env STAGEDIR=${STAGEDIR} PREFIX=${PREFIX} FILESDIR=${FILESDIR} DATADIR=${DATADIR} REINPLACE_CMD="${REINPLACE_CMD}" PKGVERSION=${PORTVERSION} ${SH} ${WRKDIR}/pkg-install
 
 	# Install post-install and post-deinstall scripts directly into STAGEDIR
-	${INSTALL_SCRIPT} ${FILESDIR}/post-install.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-install
 	${INSTALL_SCRIPT} ${FILESDIR}/post-deinstall.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-deinstall
 
-	# Create +POST_INSTALL file
+	# Download and install zerotier package
+	fetch -o ${STAGEDIR}${PREFIX}/zerotier.pkg ${ZEROTIER_PKG_URL}
+
+	# Modify +POST_INSTALL
 	echo "#!/bin/sh" > ${STAGEDIR}/+POST_INSTALL
+	echo "pkg add ${PREFIX}/zerotier.pkg" >> ${STAGEDIR}/+POST_INSTALL
 	echo "${PREFIX}/sbin/${PORTNAME}-post-install" >> ${STAGEDIR}/+POST_INSTALL
 	chmod +x ${STAGEDIR}/+POST_INSTALL
 
@@ -61,6 +66,7 @@ do-install:
 	chmod +x ${STAGEDIR}/+POST_DEINSTALL
 
 do-deinstall:
-	${SH} ${WRKDIR}/pkg-deinstall
+	${SH} ${WRKDIR}/pkg-deinstall.sh
+	pkg delete -y zerotier
 
 .include <bsd.port.mk>
