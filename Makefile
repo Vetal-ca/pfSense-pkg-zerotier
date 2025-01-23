@@ -29,7 +29,7 @@ NO_BUILD=	yes
 NO_MTREE=	yes
 
 FILESDIR=	${.CURDIR}/files
-SUB_FILES=	pkg-deinstall pkg-post-install
+SUB_FILES=	pkg-install pkg-deinstall pkg-post-install
 SUB_LIST=	PREFIX=${PREFIX} STAGEDIR=${STAGEDIR} DATADIR=${DATADIR} PKGVERSION=${PORTVERSION} ZEROTIER_VERSION=${ZEROTIER_VERSION}
 
 # Set DATADIR explicitly
