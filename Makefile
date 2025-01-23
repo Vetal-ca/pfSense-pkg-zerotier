@@ -23,13 +23,13 @@ COMMENT=	pfSense package zerotier
 
 LICENSE=	APACHE20
 
-RUN_DEPENDS=	${LOCALBASE}/sbin/zerotier-one:net/zerotier
+# RUN_DEPENDS=	${LOCALBASE}/sbin/zerotier-one:net/zerotier
 
 NO_BUILD=	yes
 NO_MTREE=	yes
 
 FILESDIR=	${.CURDIR}/files
-SUB_FILES=	pkg-install pkg-deinstall
+SUB_FILES=	pkg-deinstall pkg-post-install
 SUB_LIST=	PREFIX=${PREFIX} STAGEDIR=${STAGEDIR} DATADIR=${DATADIR} PKGVERSION=${PORTVERSION} ZEROTIER_VERSION=${ZEROTIER_VERSION}
 
 # Set DATADIR explicitly
@@ -46,17 +46,18 @@ do-install:
 	${MKDIR} ${STAGEDIR}${PREFIX}/sbin
 
 	# Run pkg-install script
-	env STAGEDIR=${STAGEDIR} PREFIX=${PREFIX} FILESDIR=${FILESDIR} DATADIR=${DATADIR} REINPLACE_CMD="${REINPLACE_CMD}" PKGVERSION=${PORTVERSION} ${SH} ${WRKDIR}/pkg-install
+	#env STAGEDIR=${STAGEDIR} PREFIX=${PREFIX} FILESDIR=${FILESDIR} DATADIR=${DATADIR} REINPLACE_CMD="${REINPLACE_CMD}" PKGVERSION=${PORTVERSION} ${SH} ${WRKDIR}/pkg-install
 
 	# Install post-install and post-deinstall scripts directly into STAGEDIR
 	${INSTALL_SCRIPT} ${FILESDIR}/post-deinstall.sh ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-deinstall
 
-	# Download and install zerotier package
+	# Download zerotier package
 	fetch -o ${STAGEDIR}${PREFIX}/zerotier.pkg ${ZEROTIER_PKG_URL}
 
 	# Modify +POST_INSTALL
 	echo "#!/bin/sh" > ${STAGEDIR}/+POST_INSTALL
-	echo "pkg add ${PREFIX}/zerotier.pkg" >> ${STAGEDIR}/+POST_INSTALL
+	echo "pkg add -f ${PREFIX}/zerotier.pkg" >> ${STAGEDIR}/+POST_INSTALL
+	echo "rm ${PREFIX}/zerotier.pkg" >> ${STAGEDIR}/+POST_INSTALL
 	echo "${PREFIX}/sbin/${PORTNAME}-post-install" >> ${STAGEDIR}/+POST_INSTALL
 	chmod +x ${STAGEDIR}/+POST_INSTALL
 
@@ -64,6 +65,8 @@ do-install:
 	echo "#!/bin/sh" > ${STAGEDIR}/+POST_DEINSTALL
 	echo "${PREFIX}/sbin/${PORTNAME}-post-deinstall" >> ${STAGEDIR}/+POST_DEINSTALL
 	chmod +x ${STAGEDIR}/+POST_DEINSTALL
+
+	${INSTALL_SCRIPT} ${WRKDIR}/pkg-post-install ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}-post-install
 
 do-deinstall:
 	${SH} ${WRKDIR}/pkg-deinstall.sh
