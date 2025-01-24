@@ -42,6 +42,8 @@ do-extract:
 	${MKDIR} ${WRKSRC}
 
 do-install:
+	@echo "STAGEDIR is set to ${STAGEDIR}"
+	@echo "PREFIX is set to ${PREFIX}"
 	# Create necessary directories
 	${MKDIR} ${STAGEDIR}${PREFIX}/sbin
 
