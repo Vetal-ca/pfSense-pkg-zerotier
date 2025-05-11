@@ -1,0 +1,5 @@
+#!/bin/sh
+ 
+if [ "$2" = "POST-INSTALL" ]; then
+    service zerotier start || true
+fi 

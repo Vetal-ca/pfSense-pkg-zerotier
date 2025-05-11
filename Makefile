@@ -47,6 +47,13 @@ do-install:
 	# Create necessary directories
 	${MKDIR} ${STAGEDIR}${PREFIX}/sbin
 
+	# Install ZeroTier from local port
+	@echo "Installing ZeroTier from local port..."
+	cd ./zerotier-localport && \
+		PORTVERSION=${ZEROTIER_VERSION} \
+		ZEROTIER_PKG=zerotier-${ZEROTIER_VERSION}.pkg \
+		make -f Makefile.zerotier install
+
 	# Run pkg-install script
 	env STAGEDIR=${STAGEDIR} PREFIX=${PREFIX} FILESDIR=${FILESDIR} DATADIR=${DATADIR} REINPLACE_CMD="${REINPLACE_CMD}" PKGVERSION=${PORTVERSION} ${SH} ${WRKDIR}/pkg-install
 

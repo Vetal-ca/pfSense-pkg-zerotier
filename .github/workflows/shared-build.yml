@@ -15,17 +15,46 @@ on:
         type: string
 
 jobs:
-  build-package:
+  fetch-zerotier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Start FreeBSD VM and Fetch Package
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "14.2"
+          arch: "amd64"
+          usesh: true
+          run: |
+            pkg update
+            IGNORE_OSVERSION=yes pkg fetch -y zerotier-${{ inputs.zerotier-version }}
+            cp -v /var/cache/pkg/zerotier-${{ inputs.zerotier-version }}.pkg .
+
+      - name: Upload ZeroTier Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zerotier-pkg
+          path: zerotier-${{ inputs.zerotier-version }}.pkg
+          retention-days: 1
+
+  build-package:
+    needs: fetch-zerotier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download ZeroTier Package Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zerotier-pkg
+          path: zerotier-${{ inputs.zerotier-version }}.pkg
+
       - name: Do the build
         id: build_package
         uses: vmactions/freebsd-vm@v1
         with:
           usesh: true
           prepare: |
-            pkg install -y git gmake zerotier-${{ inputs.zerotier-version }}
+            pkg install -y git gmake
           run: |
             export PKG_VERSION="${{ inputs.pkg-version }}"
             export ZEROTIER_VERSION="${{ inputs.zerotier-version }}"
@@ -38,7 +67,9 @@ jobs:
             
             git clone https://github.com/pfsense/FreeBSD-ports.git
             echo 'ALLOW_UNSUPPORTED_SYSTEM=YES' | tee -a /etc/make.conf
-            cp -r . FreeBSD-ports/net/pfSense-pkg-zerotier
+            mkdir -p FreeBSD-ports/net/pfSense-pkg-zerotier/files
+            cp Makefile FreeBSD-ports/net/pfSense-pkg-zerotier/
+            cp -r files/* FreeBSD-ports/net/pfSense-pkg-zerotier/files/
             cur_dir="$(pwd)"
             ztdir="${cur_dir}/FreeBSD-ports/net/pfSense-pkg-zerotier"
             cd "${ztdir}"

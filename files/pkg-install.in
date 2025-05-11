@@ -13,15 +13,10 @@ echo "Prefix: ${PREFIX}"
 echo "Filedir: ${FILESDIR}"
 echo "Datadir: ${DATADIR}"
 
-# Download and install ZeroTier package
-fetch -o /tmp/zerotier.pkg https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/releases/download/zerotier-${ZEROTIER_VERSION}/zerotier-${ZEROTIER_VERSION}.pkg
-pkg add /tmp/zerotier.pkg
-
 # Create necessary directories
 mkdir -p ${STAGEDIR}${PREFIX}/pkg
 mkdir -p ${STAGEDIR}${PREFIX}/www
 mkdir -p ${STAGEDIR}${DATADIR}
-
 
 # Install files
 install -m 644 ${FILESDIR}${PREFIX}/pkg/zerotier.xml ${STAGEDIR}${PREFIX}/pkg
