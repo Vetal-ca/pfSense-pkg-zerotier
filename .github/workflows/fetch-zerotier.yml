@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'version.json'
+      - '.github/workflows/fetch-zerotier.yml'
   workflow_dispatch:
 
 jobs:
